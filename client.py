@@ -3,7 +3,7 @@ from socket import socket
 import json
 
 if sys.argv[1] == 'msg':
-    j = json.dumps({'v':'pypy msg'})
+    j = json.dumps({'v':sys.argv[2]})
     s = socket()
     s.connect(('0.0.0.0', 18920))
     s.send(j)
