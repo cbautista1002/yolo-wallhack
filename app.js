@@ -1,7 +1,8 @@
-var app  = require('express')();
-var http = require('http').Server(app);
-var io   = require('socket.io')(http);
-var net  = require('net');
+var app   = require('express')();
+var http  = require('http').Server(app);
+var io    = require('socket.io')(http);
+var net   = require('net');
+var tail  = require('tail');
 
 app.get('/', function(req, res){
     res.sendfile('index.html');
@@ -40,4 +41,15 @@ function processPyData(socket){
 net.createServer(processPyData)
     .listen(port, host, function(){
     console.log('Listening on %s:%s', host, port);
+});
+
+/*
+    Section for working with file streaming input
+*/
+var tail = new tail.Tail('./py_output.log');
+tail.on('line', function(data){
+    console.log(data);
+});
+tail.on("error", function(error) {
+  console.log('ERROR: ', error);
 });
