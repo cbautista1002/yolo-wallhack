@@ -3,6 +3,7 @@ var http  = require('http').Server(app);
 var io    = require('socket.io')(http);
 var net   = require('net');
 var tail  = require('tail');
+var lines = require('./models/fileLines.js');
 
 app.get('/', function(req, res){
     res.sendfile('index.html');
@@ -10,6 +11,18 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
     console.log('a user connected');
+    socket.emit('update', 'Welcome!');
+
+    // Show new user the latest lines
+    lines.get(function(error, data){
+        if(error){
+            socket.emit('Error occurred in server');
+        }
+        data.forEach(function(element){
+            socket.emit('update', element);
+        });
+    });
+
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
@@ -49,7 +62,10 @@ net.createServer(processPyData)
 var tail = new tail.Tail('./py_output.log');
 tail.on('line', function(data){
     console.log(data);
+    // Immediately send the new data to the client
     io.emit('update', data);
+    // Store data in database
+    lines.save(data);
 });
 tail.on("error", function(error) {
   console.log('ERROR: ', error);
