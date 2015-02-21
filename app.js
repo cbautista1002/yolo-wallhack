@@ -1,9 +1,9 @@
 var app  = require('express')();
 var http = require('http').Server(app);
 var io   = require('socket.io')(http);
+var net  = require('net');
 
 app.get('/', function(req, res){
-//     res.write('HELLO');
     res.sendfile('index.html');
 });
 
@@ -20,4 +20,24 @@ io.on('connection', function(socket){
 
 http.listen(3000, '0.0.0.0', function(){
     console.log('listening on 0.0.0.0:3000');
+});
+
+/*
+    Section for getting data from python application
+*/
+var host = '127.0.0.1'
+var port = 18920;
+
+function processPyData(socket){
+    console.log('Net Connection');
+    socket.on('data', function(data){
+        var j = JSON.parse(data);
+        console.log('Got data', j.v);
+        io.emit('update', j.v);
+    })
+}
+
+net.createServer(processPyData)
+    .listen(port, host, function(){
+    console.log('Listening on %s:%s', host, port);
 });
