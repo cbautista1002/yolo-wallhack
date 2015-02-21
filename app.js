@@ -49,6 +49,7 @@ net.createServer(processPyData)
 var tail = new tail.Tail('./py_output.log');
 tail.on('line', function(data){
     console.log(data);
+    io.emit('update', data);
 });
 tail.on("error", function(error) {
   console.log('ERROR: ', error);
