@@ -1,7 +1,5 @@
 # yolo-wallhack
 
-## ExecSummary
-
 This is a chat application that allows for users to chat via the web page and
 also allows for broadcast messages that are sent into the node server via a
 direct tcp socket as well as file tailing with those contents sent to the
